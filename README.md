@@ -172,6 +172,28 @@ Navigator.pop(context);
 >
 >
 
+- **Method 2**
+
+> We can use **onGenerateRoute**
+>```dart
+>MaterialApp(
+>  onGenerateRoute: (settings) {
+>    if (settings.name == PassArgumentsScreen.routeName) {
+>      final args = settings.arguments as ScreenArguments;
+>      return MaterialPageRoute(
+>        builder: (context) {
+>          return PassArgumentsScreen(
+>            title: args.title,
+>            message: args.message,
+>          );
+>        },
+>      );
+>    }
+>    return null;
+>  },
+>)
+>```
+
 **Properties**
 
 1. ".pushNamedAndRemoveUntil" - method used to remove the routes from the stack.
@@ -193,5 +215,39 @@ Navigator.pop(context);
 > ![image](https://user-images.githubusercontent.com/110470373/185064999-95140173-4fd1-4f30-84c6-4fb3f6c565d4.png)
 >
 
+2. ".popUntil"
+
+> ```dart
+> void _logout() {
+>   Navigator.popUntil(context, ModalRoute.withName('/login'));
+> }
+> ```
+
+
+## Future builder
+
+- Used to build widget when future is involved.
+
+![image](https://user-images.githubusercontent.com/110470373/185089367-8c34fd8a-42b4-425f-bb21-4b9d61af39d8.png)
+
+## Builder & BuildContext
+
+**Used to answer the questions**
+
+- where am i located in tree
+- what going on around me
+
+> Note:
+>
+> - The contaxt can get information about the parent widgets not of its child widget.
+> - It will check the previous widget in vertically not in horizontally.
+
+Eg :
+Direct accessing context of scaffold which created an issue 
+![image](https://user-images.githubusercontent.com/110470373/185095684-54050c51-42eb-401d-9a15-dccd20a9b174.png)
+
+Add Builder to solve the problem
+
+![image](https://user-images.githubusercontent.com/110470373/185095952-3e77d838-8d72-4725-b32d-f463495426b0.png)
 
 
