@@ -337,6 +337,54 @@ StreamBuilder(
 
 # Johannes 
 
+## ListView with json Data
+
+```dart
+static Future<List<User>> getUsers() async {
+  await Future.delayed(const Duration(seconds: 3));
+  const data = [
+    {"userName": "Rajesh", "email": "rajesheffivitytest@gmail.com"},
+    {"userName": "Mahesh", "email": "mahesheffivitytest@gmail.com"},
+    {"userName": "Sathya", "email": "sathyaeffivitytest@gmail.com"},
+  ];
+  return data.map<User>(User.fromJson).toList();
+}
+```
+
+
+```dart
+FutureBuilder<List<User>>(
+  future: usersFuture,
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (snapshot.hasError) {
+      return Text("${snapshot.error}");
+    } else if (snapshot.hasData) {
+      final users = snapshot.data!;
+      return buildUsers(users);
+    } else {
+      return Text("No data found");
+    }
+  },
+),
+```
+
+```dart
+class User {
+  final String userName;
+  final String email;
+  User({required this.email, required this.userName});
+
+  // Takes Json and converts to user object
+  static User fromJson(json) => User(
+        userName: json["userName"],
+        email: json["email"],
+      );
+}
+
+```
+
 ## Flutter Vertical List View - Scrollable
 
 - We can use ***"SingleChildListView"*** to make all the childrens scrollable.
