@@ -574,7 +574,7 @@ children:[
 ```
 
 
-## DropDown in AppBar
+## AppBar
 
 - We can use "PopupMenuButton" widget.
 
