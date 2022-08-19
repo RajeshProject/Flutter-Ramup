@@ -202,7 +202,7 @@ Navigator.pop(context);
 > If you logged in and moved into many page and if you logout it should remove all the routes from the page and navigate to login page
 > 
 > ```dart
-> Navigator.pushNamedAndRemoveUntil(context, '/login',Route<dynamic> route) => false);
+> Navigator.pushNamedAndRemoveUntil(context, '/login',(Route<dynamic> route) => false);
 > ```
 > ![image](https://user-images.githubusercontent.com/110470373/185064456-2060d0e6-51e3-4844-bbcb-452e3e883ce1.png)
 >
@@ -515,6 +515,28 @@ Column(
 )
 ```
 
+```dart
+main() {
+    
+  // Creating lists
+  List list1 = ['Mango', 'Apple'];
+  List list2 = ['Orange', 'Avocado', 'Grape'];
+  List list3 = ['Lemon'];
+    
+  // Combining lists
+  var combinedList = [...list1, ...list2, ...list3];
+    
+  // Printing combined list
+  print(combinedList);
+
+  // extending newList using spread operator
+  List newList = ['One',...list1];
+  // display result
+  print(newList);
+
+}
+
+```
 
 ## Collection If and Collection For
 
@@ -574,7 +596,7 @@ children:[
 ```
 
 
-## AppBar
+## DropDown in AppBar
 
 - We can use "PopupMenuButton" widget.
 
@@ -632,4 +654,229 @@ Widget getMenu() {
       ),
     );
   }
+```
+
+## FittedBox 
+
+- Fit widget into the available space of the another widget.
+- It will make the child size to fit into the parent widget size.
+- To make the child widget size to small size use "fit:Boxfit.scaleDown".
+
+```dart
+ Container(
+  color: Colors.green,
+  height: 300,
+  width: 200,
+  child: FittedBox(
+    child: Center(
+      child: Text(
+        'Flutter',
+        style: TextStyle(
+          fontSize: 64, // Ignored
+        ),
+      ),
+    ),
+  ),
+);
+```
+
+![image](https://user-images.githubusercontent.com/110470373/185541231-d31d018a-60c5-4c2b-b7d6-50e5905ed2fa.png)
+
+
+## PageView and Page Controller
+
+- "PageView" used to make swipe pages horizontally or vertically.
+
+```dart
+PageView(
+  scrollDirection: Axis.vertical,
+  onPageChanged: (value) {
+    print("Page ${value + 1}");
+  },
+  children: [
+    Container(
+      color: Colors.red,
+      child: const Center(
+        child: Text(
+          "Page1",
+          style: TextStyle(fontSize: 20.0, color: Colors.white),
+        ),
+      ),
+    ),
+    Container(...),
+    Container(...),
+  ],
+),
+```
+
+- You can use controller to control the page view like initalize the default page to show, 
+
+
+```dart
+  final controller = PageController(initialPage: 1); // Initialize the page to show by default
+  .
+  .
+  .
+  PageView(
+    scrollDirection: Axis.vertical,
+    controller: controller,
+  .
+  .
+  .              
+  controller.animateToPage(0, duration: const Duration(seconds: 1), curve: Curves.easeInOut); // set the page it should move
+  controller.previousPage(duration: const Duration(seconds: 1), curve: Curves.easeInOut);
+  controller.nextPage(duration: const Duration(seconds: 1), curve: Curves.easeInOut);
+
+
+```
+
+## Expansion Panel
+
+- Used to create expand and collapse list items in the list.
+
+![image](https://user-images.githubusercontent.com/110470373/185564848-6cc37fb2-ff29-485d-b1dd-cc66d3625a48.png)
+
+1. We can use "ExpansionPanelList.radio" and "ExpansionPanelRadio" to create expand and collapse. But We can make only one panel to active. To set multiple panel active follow method 2.
+
+```dart
+ExpansionPanelList.radio(
+  children: items
+      .map((item) => ExpansionPanelRadio(
+            canTapOnHeader: true,
+            value: item.header,
+            headerBuilder: (context, isExpanded) => ListTile(
+              title: Text(item.header),
+            ),
+            body: ListTile(
+              title: Text(item.body),
+            ),
+          ))
+      .toList(),
+),
+```
+
+2. We can use "ExpansionPanelList" and "ExpansionPanel" to achive multiple panel active.
+
+```dart
+ExpansionPanelList(
+  expansionCallback: ((panelIndex, isExpanded) {
+    setState(() {
+      items1[panelIndex].isExpanded = !isExpanded;
+    });
+  }),
+  children: items1
+      .map((item) => ExpansionPanel(
+            isExpanded: item.isExpanded,
+            backgroundColor: Colors.orange.shade100,
+            canTapOnHeader: true,
+            headerBuilder: (context, isExpanded) => ListTile(
+              title: Text(item.header),
+            ),
+            body: ListTile(
+              title: Text(item.body),
+            ),
+          ))
+      .toList(),
+),
+```
+
+## Search And Filter
+
+- To show how use filter list view using search.
+- Each time the value is change in the input then filter the list book and updated in listview.
+
+```dart
+void getFilterBooks(String query) {
+    final suggestions = allBooks.where((element) {
+      final booltitle = element.title.toLowerCase();
+      final input = query.toLowerCase();
+      return booltitle.contains(input);
+    }).toList();
+    setState(() {
+      books = suggestions;
+    });
+  }
+```
+
+## Intrinsic Height & Intrinsic Width Widgets
+
+- To apply same height to widgets.
+
+1. Intrinsic Height
+
+![image](https://user-images.githubusercontent.com/110470373/185582615-b4e3b6b1-143d-450a-b990-c49c27ed2518.png)
+
+![image](https://user-images.githubusercontent.com/110470373/185582757-61aef217-607e-4b55-b19f-12e317d22342.png)
+
+![image](https://user-images.githubusercontent.com/110470373/185582215-522a2ed9-338b-4f66-8ee9-0d2de59776cf.png)
+
+2. Intrinsic Width
+
+![image](https://user-images.githubusercontent.com/110470373/185582947-98016270-39c4-4cc7-9e10-67cd846ae3b8.png)
+
+![image](https://user-images.githubusercontent.com/110470373/185583271-e60aed05-6c2e-4d6d-b011-68bf99fc84c8.png)
+
+
+## Login Form
+
+- Create form of email and password with validation.
+
+1. **Create a Form with a GlobalKey**
+
+- The Form widget acts as a container for grouping and validating multiple form fields.
+
+```dart
+
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+        ],
+      ),
+    );
+  }
+}
+```
+
+2. **Add a TextFormField with validation logic**
+
+```dart
+TextFormField(
+  validator: (value) {
+    if (value == null || value.isEmpty) {
+      return 'Email is invalid';
+    }
+    return null;
+  },
+),
+```
+
+3. **Create a button to validate and submit the form**
+
+```dart
+ ElevatedButton(
+  onPressed: () {
+    final isFormValid = formKey.currentState!.validate(); //currentState- method to access the FormState,
+    if (isFormValid) {}
+  },
+  child: Text("Submit"),
+)
+```
+
+## DropDown Menu
+
+```dart
+ DropdownButtonFormField<String>(
+  items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
+  value: selectedItem,
+  onChanged: ((value) {
+    setState(() {
+      selectedItem = value;
+    });
+  }),
+),
 ```
