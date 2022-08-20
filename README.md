@@ -1292,3 +1292,61 @@ DateTime defaultDate = DateTime(2022, 08, 20, 5, 30);
       defaultDate = newDateTime;
     });
   ```
+
+  ## Disable Button
+
+  ```dart
+  class _JDiableButtonState extends State<JDiableButton> {
+  bool isButtonActive = false;
+  late TextEditingController controller;
+  
+  @override
+  void initState() {
+    super.initState();
+    controller = TextEditingController();
+    controller.addListener(() {
+      final isButtonActive = controller.text.isNotEmpty;
+      setState(() {
+        this.isButtonActive = isButtonActive;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 180,
+      child: Column(
+        children: [
+          TextField(
+            decoration: InputDecoration(label: Text('Name')),
+            controller: controller,
+          ),
+          ElevatedButton(
+            onPressed: isButtonActive
+                ? () {
+                    controller.clear();
+                  }
+                : null,
+            child: const Text("Clear"),
+          )
+        ],
+      ),
+    );
+  }
+}
+  ```
+
+```dart
+onChanged: (value) {
+  setState(() {
+    isButtonActive = value.isNotEmpty;
+  });
+},
+```
