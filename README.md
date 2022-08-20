@@ -1121,8 +1121,8 @@ Widget build(BuildContext context) {
         border: TableBorder.all(),
         columnWidths: {
           0: FractionColumnWidth(0.5), //50%
-          1: FractionColumnWidth(0.25), //50%
-          2: FractionColumnWidth(0.25) //50%
+          1: FractionColumnWidth(0.25), //25%
+          2: FractionColumnWidth(0.25) //25%
         },
         children: [
           buildRow(["Name", "City", "Age"], isHeader: true),
