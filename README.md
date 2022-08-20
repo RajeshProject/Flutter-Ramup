@@ -880,3 +880,415 @@ TextFormField(
   }),
 ),
 ```
+
+## WillPopScope widget.
+
+- Used to handle back button pressed in flutter.
+- Need to wrap scaffold with "WillPopScope" which has a property "onWillPop" callback method.
+- If you return false in the function, it will stop going back in app.
+
+```dart
+ WillPopScope(
+      onWillPop: () async {
+        return true;
+      },
+      child: Scaffold(),
+    );
+```
+
+## Gesture Detector & InkWell Widget
+
+1. **Gesture Detector**
+
+- It used to detect events.
+- If you wrap any widget inside Gesture, You can track many widgets like single tab, double tab, long press etc..,
+
+```dart
+ GestureDetector(
+onTap: () => setState(() => text = "Single Tab"),
+onDoubleTap: () => setState(() => text = "Double Tab"),
+onLongPress: () => setState(() => text = "Long Press"),
+child:Container()
+)
+```
+
+
+2. **InkWell**
+
+- It used to detect events with splash effect.
+- If you wrap any widget inside Inkwell with the child as "Ink" Widget, you can get splash effect.
+- You can customise the splash colors as well.
+- Use **"ClipRRect"** widget to make the box rounded. Importantly put **Material** Widget between ClipRRext and Inkwell widgets.
+
+```dart
+ClipRRect(
+  borderRadius: BorderRadius.circular(10.0),
+  child: Material(
+    child: InkWell(
+      highlightColor: Colors.orange.withOpacity(0.3),
+      splashColor: Colors.red.shade100,
+      onTap: () => setState(() => text = "Single Tab"),
+      onDoubleTap: () => setState(() => text = "Double Tab"),
+      onLongPress: () => setState(() => text = "Long Press"),
+      child: Ink(
+        color: Colors.blue,
+        width: size.width * 0.5,
+        height: size.height * 0.3,
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(fontSize: 20.0, color: Colors.white),
+          ),
+        ),
+      ),
+    ),
+  ),
+),
+```
+
+
+## CheckBox & CheckBoxListTile
+
+```dart
+Checkbox(
+  value: isChecked,
+  onChanged: (value) {
+    setState(() {
+      isChecked = value!;
+    });
+  },
+),
+```
+
+```dart
+CheckboxListTile(
+  controlAffinity: ListTileControlAffinity.leading, // Make checkbox to be leading
+  value: isChecked1,
+  title: Text("This is to check Checkbox"),
+  subtitle: Text("It working fine"),
+  onChanged: (value) {
+    setState(() {
+      isChecked1 = value!;
+    });
+  },
+)
+```
+
+## TabBar
+
+1. Wrap Scaffold inside "DefaultTabController" and set lenght.
+
+```dart
+DefaultTabController(
+      length: 3, // No of taps
+      child: Scaffold(
+      ),
+    );
+  }
+```
+
+2. Add Tabs in appbar with icon (optional)
+
+```dart
+appBar: AppBar(
+title: const Text("TapBar"),
+bottom: const TabBar(tabs: [
+  Tab(
+    text: 'Tab 1',
+    icon: Icon(Icons.home),
+  ),
+  Tab(
+    text: 'Tab 2',
+    icon: Icon(Icons.star),
+  ),
+  Tab(
+    text: 'Tab 3',
+    icon: Icon(Icons.person),
+  )
+])),
+```
+
+3. Create Tabs in body.
+
+```dart
+body: const TabBarView(children: [
+Center(
+  child: Text(
+    "Page 1",
+    style: TextStyle(fontSize: 20.0),
+  ),
+),
+Center(
+  child: Text(
+    "Page 2",
+    style: TextStyle(fontSize: 20.0),
+  ),
+),
+Center(
+  child: Text(
+    "Page 3",
+    style: TextStyle(fontSize: 20.0),
+  ),
+)
+,
+```
+
+
+## Navigation Bar
+
+1. Create "NavigationBar" in scaffold and make it to detect the tabs. 
+2. creates pages and using the index values make the pages to show in body.
+
+```dart
+int index = 0;
+  final pages = [
+    Center(child: Text("Page 1", style: TextStyle(fontSize: 20.0))),
+    Center(child: Text("Page 2", style: TextStyle(fontSize: 20.0))),
+    Center(child: Text("Page 3", style: TextStyle(fontSize: 20.0)))
+  ];
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: pages[index],
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (value) => setState(() => index = value),
+        selectedIndex: index,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.email_rounded),
+            label: 'page 1',
+            selectedIcon: Icon(Icons.email),
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.chat_bubble_outline),
+            label: 'page 2',
+            selectedIcon: Icon(Icons.chat_bubble),
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.videocam_outlined),
+            label: 'page 3',
+            selectedIcon: Icon(Icons.videocam),
+          ),
+        ],
+      ),
+    );
+  }
+```
+
+## Expansion Tile
+
+- Used to create a expanding dropdown with options.
+
+```dart
+ExpansionTile(
+  title: Text('Item', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+  children: [
+    ListTile(title: Text("Item 1", style: TextStyle(fontSize: 15))),
+    ListTile(title: Text("Item 2", style: TextStyle(fontSize: 15))),
+    ListTile(title: Text("Item 3", style: TextStyle(fontSize: 15))),
+    ListTile(title: Text("Item 4", style: TextStyle(fontSize: 15))),
+    ListTile(title: Text("Item 5", style: TextStyle(fontSize: 15))),
+  ],
+);
+```
+
+
+## Pop-up Dialog Widget
+
+- We can create pop-up in a page using "AlertDialog" widget.
+
+```dart
+AlertDialog(  
+    title: Text("Simple Alert"),  
+    content: Text("This is an alert message."),  
+    actions: [  
+      okButton,  
+    ],  
+  );  
+```
+
+![image](https://user-images.githubusercontent.com/110470373/185730754-9fc248bb-2208-4271-abf0-d35413409c51.png)
+
+
+## Table
+
+- Create table with row and headers.
+
+```dart
+Widget build(BuildContext context) {
+    return Center(
+      child: Table(
+        border: TableBorder.all(),
+        columnWidths: {
+          0: FractionColumnWidth(0.5), //50%
+          1: FractionColumnWidth(0.25), //50%
+          2: FractionColumnWidth(0.25) //50%
+        },
+        children: [
+          buildRow(["Name", "City", "Age"], isHeader: true),
+          buildRow(["Sarah", "New York", "21"]),
+          buildRow(["Emma", "Sydney", "23"]),
+          buildRow(["John", "London", "33"])
+        ],
+      ),
+    );
+  }
+
+  TableRow buildRow(List<String> cells, {bool isHeader = false}) => TableRow(
+          children: cells.map((text) {
+        TextStyle textStyle = TextStyle(fontSize: 12, fontWeight: isHeader ? FontWeight.bold : FontWeight.normal);
+        return Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Center(
+              child: Text(
+            text,
+            style: textStyle,
+          )),
+        );
+      }).toList());
+```
+
+
+## DateRange Picker
+
+- select range of date in flutter using "dateRangePicker".
+
+
+```dart
+DateTimeRange dateRange = DateTimeRange(
+  start: DateTime(2022, 08, 01), 
+  end: DateTime(2022, 08, 20)
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final start = dateRange.start;
+    final end = dateRange.end;
+    final difference = dateRange.duration;
+    return Column(
+      children: [
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  getDateRange();
+                },
+                child: Text(DateFormat('yyyy/MM/dd').format(start)), // package : intl : ^0.17.0
+              ),
+              const SizedBox(
+                width: 10.0,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  getDateRange();
+                },
+                child: Text(DateFormat('yyyy/MM/dd').format(end)),
+              ),
+            ],
+          ),
+        ),
+        Center(
+          child: Text("Difference is ${difference.inDays} days"),
+        )
+      ],
+    );
+  }
+
+  Future getDateRange() async {
+    DateTimeRange? result = await showDateRangePicker(
+      context: context,
+      initialDateRange: dateRange,
+      firstDate: DateTime(1900), // Define min date
+      lastDate: DateTime(2100), // Define max date
+    );
+    if (result == null) return; // pressed 'X'
+
+    setState(() {
+      dateRange = result;
+    });
+  }
+```
+
+
+## Date And Time
+
+```dart
+DateTime defaultDate = DateTime(2022, 08, 20, 5, 30);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  pickDate();
+                },
+                child: Text(DateFormat('yyyy/MM/dd').format(defaultDate)), // package : intl : ^0.17.0
+              ),
+              const SizedBox(
+                width: 10.0,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  pickTime();
+                },
+                child: Text(DateFormat('HH:mm').format(defaultDate)), // package : intl : ^0.17.0
+              ),
+            ],
+          ),
+        ),
+        Container(
+          child: Column(children: [
+            SizedBox(
+              width: 190,
+              child: ElevatedButton(
+                onPressed: () {
+                  pickDateTime();
+                },
+                child: Text(DateFormat('yyyy/MM/dd HH:mm').format(defaultDate)), // package : intl : ^0.17.0
+              ),
+            ),
+          ]),
+        )
+      ],
+    );
+  }
+}
+```
+
+```dart
+
+  Future pickDate() async {
+    DateTime? result = await showDatePicker(context: context, initialDate: defaultDate, firstDate: DateTime(1900), lastDate: DateTime(2100));
+    if (result == null) return;
+    setState(() {
+      final newDateTime = DateTime(result.year, result.month, result.day, defaultDate.hour, defaultDate.minute);
+      defaultDate = newDateTime;
+    });
+  }
+
+  Future pickTime() async {
+    TimeOfDay? result = await showTimePicker(context: context, initialTime: TimeOfDay(hour: defaultDate.hour, minute: defaultDate.minute));
+    if (result == null) return;
+    final newDateTime = DateTime(defaultDate.year, defaultDate.month, defaultDate.day, result.hour, result.minute);
+    setState(() {
+      defaultDate = newDateTime;
+    });
+  }
+
+  Future pickDateTime() async {
+    DateTime? date = await showDatePicker(context: context, initialDate: defaultDate, firstDate: DateTime(1900), lastDate: DateTime(2100));
+    if (date == null) return;
+    TimeOfDay? time = await showTimePicker(context: context, initialTime: TimeOfDay(hour: defaultDate.hour, minute: defaultDate.minute));
+    if (time == null) return;
+    final newDateTime = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    setState(() {
+      defaultDate = newDateTime;
+    });
+  ```
