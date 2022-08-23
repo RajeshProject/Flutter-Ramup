@@ -1533,6 +1533,92 @@ ElevatedButton.icon( // same property is applicable for all the 3 buttons
 
 ## Button Submit with Animation
 
+```dart
+enum ButtonState { init, loading, done }
+
+class JButtonWithLoading extends StatefulWidget {
+  const JButtonWithLoading({Key? key}) : super(key: key);
+
+  @override
+  State<JButtonWithLoading> createState() => _JButtonWithLoadingState();
+}
+
+class _JButtonWithLoadingState extends State<JButtonWithLoading> {
+  ButtonState state = ButtonState.init;
+  bool isAnimating = true;
+  var isStretched = false;
+  bool isLoading = false;
+  var isDone = false;
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width * 0.75;
+    isStretched = isAnimating || state == ButtonState.init;
+    isDone = state == ButtonState.done;
+    return Column(
+      children: [
+        
+        Container(
+          child: AnimatedContainer(
+              height: 50,
+              duration: Duration(milliseconds: 300),
+              curve: Curves.easeIn,
+              width: state == ButtonState.init ? width : 70,
+              onEnd: () => setState(() => isAnimating = !isAnimating),
+              child: isStretched ? buildLoadingAnimator() : buildSmallLoading(isDone)),
+        ),
+      ],
+    );
+  }
+
+  Widget buildLoadingAnimator() {
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        minimumSize: Size.fromHeight(50),
+        textStyle: TextStyle(fontSize: 15),
+        side: BorderSide(color: Colors.indigo, width: 2),
+        shape: StadiumBorder(),
+      ),
+      onPressed: () async {
+        setState(() {
+          state = ButtonState.loading;
+        });
+        await Future.delayed(const Duration(seconds: 3));
+        setState(() {
+          state = ButtonState.done;
+        });
+        await Future.delayed(const Duration(seconds: 3));
+        setState(() {
+          state = ButtonState.init;
+        });
+        await Future.delayed(const Duration(seconds: 3));
+      },
+      child: FittedBox(
+        child: Text(
+          "Submit",
+          style: TextStyle(fontSize: 24, color: Colors.indigo, fontWeight: FontWeight.w500),
+        ),
+      ),
+    );
+  }
+
+  Widget buildSmallLoading(bool isDone) {
+    Color color = isDone ? Colors.green : Colors.indigo;
+    return Container(
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+      child: Center(
+        child: isDone
+            ? Icon(
+                Icons.done,
+                color: Colors.white,
+              )
+            : SizedBox(width: 30, height: 30, child: CircularProgressIndicator(color: Colors.white)),
+      ),
+    );
+  }
+}
+
+```
+
 ## Material Banner
 
 - A banner displays an important, succinct message, and provides actions for users to address (or dismiss the banner). A user action is required for it to be dismissed.
