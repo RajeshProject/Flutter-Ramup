@@ -919,6 +919,7 @@ child:Container()
 - If you wrap any widget inside Inkwell with the child as "Ink" Widget, you can get splash effect.
 - You can customise the splash colors as well.
 - Use **"ClipRRect"** widget to make the box rounded. Importantly put **Material** Widget between ClipRRext and Inkwell widgets.
+- Use **"ClipOval"** widget to make box circle.
 
 ```dart
 ClipRRect(
@@ -1350,3 +1351,210 @@ onChanged: (value) {
   });
 },
 ```
+
+## ListView vs GridView
+
+- Create "ListView" using builder
+
+```dart
+ListView.builder(
+itemCount: items.length,
+itemBuilder: (context, index) {
+  final item = items[index];
+  return ListTile(
+    leading: CircleAvatar(radius: 28, backgroundImage: NetworkImage("https://source.unsplash.com/random?sig=$index")),
+    subtitle: Text("Subtitle $index"),
+    title: Text(item),
+    onTap: () => selectItem(item),
+  );
+},
+
+```
+
+- Create "GridView" using GridView.builder.
+
+```dart
+GridView.builder(
+gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2), // To decide no of items in row
+itemCount: items.length,
+itemBuilder: ((context, index) {
+  final item = items[index];
+  return GridTile(
+    child: InkWell(
+      onTap: () => selectItem(item),
+      child: Ink.image(
+        image: NetworkImage("https://source.unsplash.com/random?sig=$index"),
+        fit: BoxFit.cover,
+      ),
+    ),
+    footer: Text(
+      item,
+      style: TextStyle(fontSize: 32, color: Colors.white, fontWeight: FontWeight.bold),
+    ),
+  );
+}))
+```
+
+- Combine both builder using a flag to set the view type.
+
+```dart
+bool isGrid = true;
+.
+.
+.
+isGrid ? GridView.builder(...) : ListView.builder(...)
+.
+.
+.
+void selectItem(String item) { // clicking the items to show snackBar
+    final snackBar = SnackBar(
+      content: Text(
+        "Hello $item !!",
+        style: TextStyle(fontSize: 15),
+      ),
+      backgroundColor: Colors.blue,
+    );
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+```
+
+## Change Button Color on Tap
+
+- Change BackGround color of button when it pressed using "overlayColor".
+
+```dart
+ ElevatedButton(
+        style: ButtonStyle(overlayColor: getColor(Colors.white, Colors.teal)), // 1- normal color, 2- pressed color
+        onPressed: (() {}),
+        child: Text("Change Color"),
+      ),
+.
+.
+.
+ MaterialStateProperty<Color> getColor(Color color, Color colorPressed) {
+    final getColor = (Set<MaterialState> states) {
+      if (states.contains(MaterialState.pressed)) {
+        return colorPressed;
+      } else {
+        return color;
+      }
+    };
+    return MaterialStateProperty.resolveWith(getColor);
+  }
+```
+
+![image](https://user-images.githubusercontent.com/110470373/186069306-4bb87e7e-768f-4318-8bb2-61792741a3e8.png)
+
+
+- Change the "foregroundColor" and "backgroundColor" property to make the button change.
+
+```dart
+foregroundColor: getColor(Colors.red, Colors.white),// 1- normal color, 2- pressed color
+backgroundColor: getColor(Colors.white, Colors.red),// 1- normal color, 2- pressed color
+```
+
+![image](https://user-images.githubusercontent.com/110470373/186069708-c2af627a-42d5-4080-a49a-f28ff7813497.png)
+
+
+## All Buttons
+
+1. ElevatedButton
+
+```dart
+ElevatedButton(
+  style: ElevatedButton.styleFrom(
+    minimumSize: Size(150, 50),
+    textStyle: TextStyle(fontSize: 18),
+    primary: Colors.orange, //background
+    onPrimary: Colors.black, // foreground
+  ),
+  onPressed: () => Fluttertoast.showToast(msg: 'Button is pressed', fontSize: 18),
+  child: Text("Elevated Button"),
+),
+```
+
+2. OutlinedButton
+
+```dart
+OutlinedButton(
+  style: OutlinedButton.styleFrom(
+      //minimumSize: Size.fromHeight(80),
+      minimumSize: Size(150, 50),
+      textStyle: TextStyle(fontSize: 18),
+      primary: Colors.blue, // foreground
+      side: BorderSide(color: Colors.blue, width: 2)),
+  onPressed: () => Fluttertoast.showToast(msg: 'Button is pressed', fontSize: 18),
+  child: Text("Outlined Button"),
+),
+```
+
+3. TextButton
+
+```dart
+TextButton(
+  style: TextButton.styleFrom(
+    //minimumSize: Size.fromHeight(80),
+    minimumSize: Size(150, 50),
+    textStyle: TextStyle(fontSize: 18),
+    primary: Colors.green, // foreground
+  ),
+  onPressed: () => Fluttertoast.showToast(msg: 'Button is pressed', fontSize: 18),
+  child: Text("Outlined Button"),
+),
+```
+
+4. IconsButton
+
+```dart
+IconButton(
+  icon: Icon(
+    Icons.settings,
+    color: Colors.blueAccent,
+  ),
+  onPressed: () => Fluttertoast.showToast(msg: 'Button is pressed', fontSize: 18),
+),
+```
+
+5. Icon in "ElevatedButton", "OutlinedButton" and "TextButton"
+
+```dart
+ElevatedButton.icon( // same property is applicable for all the 3 buttons
+  onPressed: () => Fluttertoast.showToast(msg: 'Button is pressed', fontSize: 18),
+  icon: Icon(
+    Icons.settings,
+    color: Colors.white,
+  ),
+  label: Text("Icon in Elevated Button"),
+),
+```
+
+
+## Button Submit with Animation
+
+## Material Banner
+
+- A banner displays an important, succinct message, and provides actions for users to address (or dismiss the banner). A user action is required for it to be dismissed.
+
+```dart
+onPressed: () => ScaffoldMessenger.of(context).showMaterialBanner(
+const MaterialBanner(
+  padding: EdgeInsets.all(20),
+  content: Text('Hello, I am a Material Banner'),
+  leading: Icon(Icons.agriculture_outlined),
+  backgroundColor: Colors.green,
+  actions: <Widget>[
+    TextButton(
+      onPressed: (){
+        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+      },
+      child: Text('DISMISS'),
+    ),
+  ],
+),
+
+```
+
+![image](https://user-images.githubusercontent.com/110470373/186084602-3fc51917-0db2-4038-b651-f6030067ad89.png)
+
