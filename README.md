@@ -1443,10 +1443,6 @@ void selectItem(String item) { // clicking the items to show snackBar
     };
     return MaterialStateProperty.resolveWith(getColor);
   }
-    
-   //  MaterialState.pressed,
-   //   MaterialState.hovered,
-   //   MaterialState.focused,
 ```
 
 ![image](https://user-images.githubusercontent.com/110470373/186069306-4bb87e7e-768f-4318-8bb2-61792741a3e8.png)
@@ -1648,3 +1644,90 @@ const MaterialBanner(
 
 ![image](https://user-images.githubusercontent.com/110470373/186084602-3fc51917-0db2-4038-b651-f6030067ad89.png)
 
+
+## AppBar - methods
+
+1. To give appbar a background image.
+
+![image](https://user-images.githubusercontent.com/110470373/186326502-1e1921d0-2127-48af-9666-cf79be13cc33.png)
+
+![image](https://user-images.githubusercontent.com/110470373/186326528-bf2b3d58-277c-45b8-b752-bc8978642016.png)
+
+2. To set linear gradient colors.
+
+![image](https://user-images.githubusercontent.com/110470373/186326588-b1d9927f-62f3-464c-9f84-fe4d34d8cd42.png)
+
+![image](https://user-images.githubusercontent.com/110470373/186326620-54fc15c8-6c40-44cd-96a9-499bddba4661.png)
+
+
+3. To customize tap bar in appBar
+
+- Here you can customize the active tab, indicator.
+- If you have more tabs, you can set "isScrollable" to true. So it will be scrollable
+
+![image](https://user-images.githubusercontent.com/110470373/186326741-df687639-c8ad-4098-a803-4ddf37224db4.png)
+
+![image](https://user-images.githubusercontent.com/110470373/186326797-e532c708-ae3e-445f-84c0-bb4f8adee20c.png)
+
+
+
+## LayOut in Flutter
+
+1. Stack
+
+![image](https://user-images.githubusercontent.com/110470373/186398025-05a8440a-c2b9-4ae0-b3e5-9d2bb420df53.png)
+
+
+2. Position
+
+![image](https://user-images.githubusercontent.com/110470373/186399075-aacbb128-ebc7-4599-bdfb-c18c48ba9cd4.png)
+
+
+## Chips
+
+- Chips allow users to enter information, make selections, filter content, or trigger actions. 
+
+- There are four different types of chips that are subclasses of Chip, including 
+1.input, 
+2.choice, 
+3.filter,
+4.action.
+
+![image](https://user-images.githubusercontent.com/110470373/186402380-b862b961-8a98-4798-8ce9-b8e3708c4030.png)
+
+```dart
+
+InputChip(
+  avatar: Icon(Icons.remove),
+  label: Text('Input 1'),
+  onSelected: (bool value) {},
+),
+
+ChoiceChip(
+   label: Text('Choice 1'),
+   selected: true,
+ ),
+
+FilterChip(
+  label: Text('Filter 1'),
+  selected: true,
+  onSelected: (bool value) {},
+),
+
+ActionChip(
+  avatar: Icon(Icons.favorite),
+  label: Text('Action 1'),
+  onPressed: () {},
+),
+```
+
+## Opacity
+
+```dart
+Opacity(
+  opacity: _visible ? 1.0 : 0.0,
+  child: const Text("Now you see me, now you don't!"),
+)
+```
+
+![image](https://user-images.githubusercontent.com/110470373/186402380-b862b961-8a98-4798-8ce9-b8e3708c4030.png)
