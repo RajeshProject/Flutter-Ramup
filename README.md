@@ -1721,13 +1721,471 @@ ActionChip(
 ),
 ```
 
-## Opacity
+## Dio 
+- Dio package comes handy as it provides a powerful HTTP client for Dart and Flutter and it supports Interceptors, Global configuration, FormData, Request Cancellation, File Downloading, Timeout etc.
+
+
 
 ```dart
-Opacity(
-  opacity: _visible ? 1.0 : 0.0,
-  child: const Text("Now you see me, now you don't!"),
+import 'package:dio/dio.dart';
+
+class DioClient {
+  final Dio _dio = Dio();
+
+  final _baseUrl = 'https://reqres.in/api';
+
+}
+
+```
+
+1. **Defining the GET request**
+
+```dart
+
+  Future<User?> getUser({required String id}) async {
+  User? user;
+  try {
+    Response userData = await _dio.get(_baseUrl + '/users/$id');
+    print('User Info: ${userData.data}');
+    user = User.fromJson(userData.data);
+  } on DioError catch (e) {
+    // The request was made and the server responded with a status code
+    // that falls out of the range of 2xx and is also not 304.
+    if (e.response != null) {
+      print('Dio error!');
+      print('STATUS: ${e.response?.statusCode}');
+      print('DATA: ${e.response?.data}');
+      print('HEADERS: ${e.response?.headers}');
+    } else {
+      // Error due to setting up or sending the request
+      print('Error sending request!');
+      print(e.message);
+    }
+  }
+  return user;
+}
+```
+
+2. **Defining the POST request**
+
+```dart
+Future<UserInfo?> createUser({required UserInfo userInfo}) async {
+  UserInfo? retrievedUser;
+
+  try {
+    Response response = await _dio.post(
+      _baseUrl + '/users',
+      data: userInfo.toJson(),
+    );
+
+    print('User created: ${response.data}');
+
+    retrievedUser = UserInfo.fromJson(response.data);
+  } catch (e) {
+    print('Error creating user: $e');
+  }
+
+  return retrievedUser;
+}
+```
+
+3. **Defining the PUT request**
+
+```dart
+
+Future<UserInfo?> updateUser({
+  required UserInfo userInfo,
+  required String id,
+}) async {
+  UserInfo? updatedUser;
+
+  try {
+    Response response = await _dio.put(
+      _baseUrl + '/users/$id',
+      data: userInfo.toJson(),
+    );
+
+    print('User updated: ${response.data}');
+
+    updatedUser = UserInfo.fromJson(response.data);
+  } catch (e) {
+    print('Error updating user: $e');
+  }
+
+  return updatedUser;
+}
+```
+
+4. **Defining the DELETE request**
+
+```dart
+Future<void> deleteUser({required String id}) async {
+  try {
+    await _dio.delete(_baseUrl + '/users/$id');
+    print('User deleted!');
+  } catch (e) {
+    print('Error deleting user: $e');
+  }
+}
+```
+
+### Defining
+
+- Instead of passing the endpoint with baseUrl every time, you can just define it inside BaseOptions and pass it once while instantiating Dio.
+
+```dart
+final Dio _dio = Dio(
+  BaseOptions(
+    baseUrl: 'https://reqres.in/api',
+    connectTimeout: 5000,
+    receiveTimeout: 3000,
+  ),
+);
+```
+
+### Uploading files
+
+- You can easily upload files to a server using FormData and Dio
+
+```dart
+String imagePath;
+
+FormData formData = FormData.fromMap({
+  "image": await MultipartFile.fromFile(
+    imagePath,
+    filename: "upload.jpeg",
+  ),
+});
+
+Response response = await _dio.post(
+  '/search',
+  data: formData,
+  onSendProgress: (int sent, int total) {
+    print('$sent $total');
+  },
+);
+```
+
+### Interceptors
+
+- You can intercept Dio requests, responses, and errors before they are handled by using then or catchError
+- You can run the interceptor by overriding the callbacks at three places: onRequest, onResponse, and onError.
+
+```dart
+class AppInterceptors extends Interceptor {
+  @override
+  FutureOr<dynamic> onRequest(RequestOptions options) async {
+    if (options.headers.containsKey("requiresToken")) {
+      //remove the auxiliary header
+      options.headers.remove("requiresToken");
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var header = prefs.get("Header");
+
+      options.headers.addAll({"Header": "$header${DateTime.now()}"});
+
+      return options;
+    }
+  }
+
+  @override
+  FutureOr<dynamic> onError(DioError dioError) {
+    if (dioError.message.contains("ERROR_001")) {
+      // this will push a new route and remove all the routes that were present
+      navigatorKey.currentState.pushNamedAndRemoveUntil(
+          "/login", (Route<dynamic> route) => false);
+    }
+
+    return dioError;
+  }
+
+  @override
+  FutureOr<dynamic> onResponse(Response options) async {
+    if (options.headers.value("verifyToken") != null) {
+      //if the header is present, then compare it with the Shared Prefs key
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var verifyToken = prefs.get("VerifyToken");
+
+      // if the value is the same as the header, continue with the request
+      if (options.headers.value("verifyToken") == verifyToken) {
+        return options;
+      }
+    }
+
+    return DioError(request: options.request, message: "User is no longer active");
+  }
+}
+```
+
+```dart
+class Logging extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    print('REQUEST[${options.method}] => PATH: ${options.path}');
+    return super.onRequest(options, handler);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    print(
+      'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}',
+    );
+    return super.onResponse(response, handler);
+  }
+
+  @override
+  void onError(DioError err, ErrorInterceptorHandler handler) {
+    print(
+      'ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}',
+    );
+    return super.onError(err, handler);
+  }
+}
+```
+
+```dart
+final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: 'https://reqres.in/api',
+      connectTimeout: 5000,
+      receiveTimeout: 3000,
+    ),
+  )..interceptors.add(Logging());
+```
+
+
+
+## Syncfusion - Datagrid
+
+- Convert Json to DataSource and to SfDataGrid.
+
+![image](https://user-images.githubusercontent.com/110470373/187169020-d1655803-912e-4afb-b0a0-c5331a5cea48.png)
+
+![image](https://user-images.githubusercontent.com/110470373/187169508-e4ae615b-41d0-4313-bb03-d3a67391e289.png)
+
+```dart
+Future<List<Product>> generateProductList() async {
+    var response = await http.get(Uri.parse('https://ej2services.syncfusion.com/production/web-services/api/Orders'));
+    var decodedProducts = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<Product> productList = await decodedProducts.map<Product>((json) => Product.fromJson(json)).toList();
+    return productList;
+  }
+```
+
+- Need to convert the list to DataGridSouce.
+
+```dart
+class EmployeeDataSource extends DataGridSource {
+  EmployeeDataSource({List<Employee> employees}) {
+     _employees = employees
+        .map<DataGridRow>((e) => DataGridRow(cells: [
+              DataGridCell<int>(columnName: 'id', value: e.id),
+              DataGridCell<String>(columnName: 'name', value: e.name),
+              DataGridCell<String>(
+                  columnName: 'designation', value: e.designation),
+              DataGridCell<int>(columnName: 'salary', value: e.salary),
+            ]))
+        .toList();
+  }
+
+  List<DataGridRow>  _employees = [];
+
+  @override
+  List<DataGridRow> get rows =>  _employees;
+
+  @override
+  DataGridRowAdapter? buildRow(DataGridRow row) {
+    return DataGridRowAdapter(
+        cells: row.getCells().map<Widget>((dataGridCell) {
+      return Container(
+        alignment: (dataGridCell.columnName == 'id' || dataGridCell.columnName == 'salary')
+            ? Alignment.centerRight
+            : Alignment.centerLeft,
+        padding: EdgeInsets.all(16.0),
+        child: Text(dataGridCell.value.toString()),
+      );
+    }).toList());
+  }
+}
+
+```
+
+
+```dart
+Scaffold(
+    appBar: AppBar(
+      title: const Text('Syncfusion Flutter DataGrid'),
+    ),
+    body: SfDataGrid(
+      source: employeeDataSource,
+      columns: <GridColumn>[
+        GridColumn(
+            columnName: 'id',
+            label: Container(
+                padding: EdgeInsets.all(16.0),
+                alignment: Alignment.centerRight,
+                child: Text(
+                  'ID',
+                ))),
+        GridColumn(
+            columnName: 'name',
+            label: Container(
+                padding: EdgeInsets.all(16.0),
+                alignment: Alignment.centerLeft,
+                child: Text('Name'))),
+        GridColumn(
+            columnName: 'designation',
+            width: 120,
+            label: Container(
+                padding: EdgeInsets.all(16.0),
+                alignment: Alignment.centerLeft,
+                child: Text('Designation'))),
+        GridColumn(
+            columnName: 'salary',
+            label: Container(
+                padding: EdgeInsets.all(16.0),
+                alignment: Alignment.centerRight,
+                child: Text('Salary'))),
+      ],
+    ),
+  );
+```
+
+
+#### Sorting
+
+```dart
+SortingDataSource sortingDataGridSource=snapshot.data;
+SfDataGrid(
+  source:sortingDataGridSource ,
+  columns: getColumns(),
+  allowSorting: true, // allow to do sorting
+  allowTriStateSorting: true, // State of sorting will be three
+  allowMultiColumnSorting: true, // can to multiple sorting
+  sortingGestureType: SortingGestureType.doubleTap, // make sort when you do double tap
 )
 ```
 
-![image](https://user-images.githubusercontent.com/110470373/186402380-b862b961-8a98-4798-8ce9-b8e3708c4030.png)
+- To disable sorting to particular column
+
+```dart
+ GridColumn(
+ columnName: 'orderID',
+ allowSorting:false,
+ width: 70,
+ label: Container(padding: EdgeInsets.all(8), alignment: Alignment.centerLeft, child: Text('OrderID', overflow: TextOverflow.clip, softWrap: true))
+ ),
+      
+```
+
+
+```dart
+ElevatedButton(
+onPressed: () {
+  sortingDataGridSource.sortedColumns.add(SortColumnDetails(
+      name: 'name',
+      sortDirection: DataGridSortDirection.ascending));
+  sortingDataGridSource.sort();
+},
+child: Text('Apply sort')))
+```
+
+
+- Create custom sorting - case sensitive
+
+![image](https://user-images.githubusercontent.com/110470373/187175759-64cd59a1-c2d0-40f3-a560-cbbe953029bb.png)
+
+
+```dart
+
+  @override
+  int compare(DataGridRow? a, DataGridRow? b, SortColumnDetails sortColumn) {
+    if (sortColumn.name == 'name') {
+      final String? value1 = a
+          ?.getCells()
+          .firstWhereOrNull((element) => element.columnName == sortColumn.name)
+          ?.value
+          .toString();
+      final String? value2 = b
+          ?.getCells()
+          .firstWhereOrNull((element) => element.columnName == sortColumn.name)
+          ?.value
+          .toString();
+
+      if (value1 == null || value2 == null) {
+        return 0;
+      }
+
+      if (sortColumn.sortDirection == DataGridSortDirection.ascending) {
+        return value1.toLowerCase().compareTo(value2.toLowerCase());
+      } else {
+        return value2.toLowerCase().compareTo(value1.toLowerCase());
+      }
+    }
+    return super.compare(a, b, sortColumn);
+  }
+
+```
+
+## flutter_offline 2.1.0
+
+- A package to check online and offline of the application.
+- To know more [click here](https://pub.dev/packages/flutter_offline)
+
+```dart
+OfflineBuilder(
+  connectivityBuilder: (
+    BuildContext context,
+    ConnectivityResult connectivity,
+    Widget child,
+  ) {
+    final bool connected = connectivity != ConnectivityResult.none;
+    print("Reran");
+    return new Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned(
+          height: 24.0,
+          left: 0.0,
+          right: 0.0,
+          child: Container(
+            color: connected ? Color(0xFF00EE44) : Color(0xFFEE4400),
+            child: Center(
+              child: Text("${connected ? 'ONLINE' : 'OFFLINE'}"),
+            ),
+          ),
+        ),
+        Center(
+          child: new Text(
+            'Yay!',
+          ),
+        ),
+      ],
+    );
+  },
+),
+```
+
+## flutter_js
+
+- A package used to compile js code.
+- To know more [Click Here](https://pub.dev/packages/flutter_js)
+
+```dart
+dependencies:
+  flutter_js: 0.1.0+0
+```
+
+```dart
+JavascriptRuntime flutterJs=flutterJs = getJavascriptRuntime();
+.
+.
+.
+JsEvalResult jsResult = flutterJs.evaluate(
+    "Math.trunc(Math.random() * 100).toString();");
+setState(() {
+  _jsResult = jsResult.stringResult;
+});
+
+```
+
