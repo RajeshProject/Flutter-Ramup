@@ -2127,6 +2127,61 @@ child: Text('Apply sort')))
 
 ```
 
+#### Width Resizing
+
+```dart
+  late Map<String, double> columnWidths = {
+    'orderID': double.nan, 
+    'customerID': double.nan, 
+    'employeeID': double.nan,
+     'orderDate': double.nan, 
+     'freight': double.nan};
+
+```
+
+```dart
+SfDataGrid(
+  source: snapshot.data,
+  columns: getColumns(),
+  allowColumnsResizing: true,
+  columnResizeMode: ColumnResizeMode.onResizeEnd,
+  onColumnResizeUpdate: (ColumnResizeUpdateDetails details) {
+    setState(() {
+      columnWidths[details.column.columnName] = details.width;
+    });
+    return true;
+  },
+)
+```
+
+```dart
+List<GridColumn> getColumns() {
+    return <GridColumn>[
+      GridColumn(
+          columnName: 'orderID',
+          width: columnWidths['orderID']!,
+          label: Container(padding: EdgeInsets.all(8), alignment: Alignment.centerLeft, child: Text('Order ID', overflow: TextOverflow.clip, softWrap: true))),
+      GridColumn(
+          columnName: 'customerID',
+          width: columnWidths['customerID']!,
+          label: Container(padding: EdgeInsets.all(8), alignment: Alignment.centerRight, child: Text('Customer ID', overflow: TextOverflow.clip, softWrap: true))),
+      GridColumn(
+          columnName: 'employeeID',
+          width: columnWidths['employeeID']!,
+          label: Container(padding: EdgeInsets.all(8), alignment: Alignment.centerLeft, child: Text('Employee ID', overflow: TextOverflow.clip, softWrap: true))),
+      GridColumn(
+          columnName: 'orderDate',
+          width: columnWidths['orderDate']!,
+          label: Container(padding: EdgeInsets.all(8), alignment: Alignment.centerRight, child: Text('Order Date', overflow: TextOverflow.clip, softWrap: true))),
+      GridColumn(
+        columnName: 'freight',
+        width: columnWidths['freight']!,
+        label: Container(padding: EdgeInsets.all(8), alignment: Alignment.centerLeft, child: Text('Freight')),
+      )
+    ];
+```
+
+
 ## flutter_offline 2.1.0
 
 - A package to check online and offline of the application.
@@ -2189,3 +2244,34 @@ setState(() {
 
 ```
 
+![image](https://user-images.githubusercontent.com/110470373/187417935-5f860746-134d-46d5-8435-a3ef0917c686.png)
+
+
+## image_downloader
+
+- A package to download images from online and save to Photo library.
+- To know more [Click here](https://pub.dev/packages/image_downloader)
+
+1. Add this permission in AndroidManifest.xml.
+
+```xml
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+```
+
+```dart
+try {
+  // Saved with this method.
+  var imageId = await ImageDownloader.downloadImage("https://raw.githubusercontent.com/wiki/ko2ic/image_downloader/images/flutter.png",destination:AndroidDestinationType.directoryDownloads..subDirectory("flutter_image.png"));
+  if (imageId == null) {
+    return;
+  }
+
+  // Below is a method of obtaining saved image information.
+  var fileName = await ImageDownloader.findName(imageId);
+  var path = await ImageDownloader.findPath(imageId);
+  var size = await ImageDownloader.findByteSize(imageId);
+  var mimeType = await ImageDownloader.findMimeType(imageId);
+} on PlatformException catch (error) {
+  print(error);
+}
+```
